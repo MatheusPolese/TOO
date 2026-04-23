@@ -64,11 +64,7 @@ class Missao:
         print(f"Status: {self.__status.value}")
     
     def iniciar_missao(self):
-        if self.__status == Status.PENDENTE:
-            self.__status = Status.EM_ANDAMENTO
-            print(f"A missão {self.__nome} começou! Objetivo central da missão: {self.__descricao}.")
-        else:
-            print("A missão em andamento")
+        return False
     
     def concluir_missao(self) :
         if self.__status == Status.EM_ANDAMENTO:
@@ -82,6 +78,13 @@ class MissaoCombate(Missao):
         super().__init__(nome, descricao, recompensa)
         self.__tipo_inimigo = tipo_inimigo
         self.__inimigos_a_derrotar = inimigos_a_derrotar
+
+    def concluir_missao(self, valor):
+        if valor >= self._MissaoCombate__inimigos_a_derrotar:
+            self._Missao__status = Status.CONCLUIDA
+            return True
+        self._Missao__status = Status.FRACASSADA
+        return False
 
     @property
     def tipo_inimigo(self):
@@ -122,6 +125,13 @@ class MissaoColeta(Missao):
         self.item_necessario = item_necessario
         self.quantidade_item = quantidade_item
 
+    def concluir_missao(self, valor):
+        if valor >= self._MissaoColeta__quantidade_item:
+            self._Missao__status = Status.CONCLUIDA
+            return True
+        self._Missao__status = Status.FRACASSADA
+        return False
+
     @property
     def item_necessario(self):
         return self.__item_necessario
@@ -155,6 +165,14 @@ class MissaoExploracao(Missao):
         super().__init__(nome, descricao, recompensa)
         self.regiao_destino = regiao_destino
         self.distancia_em_km = distancia_em_km
+
+    def concluir_missao(self, valor):
+        if valor >= self._MissaoExploracao__distancia_em_km:
+            self._Missao__status = Status.CONCLUIDA
+            return True
+        self._Missao__status = Status.FRACASSADA
+        return False
+
 
     @property
     def regiao_destino(self):
