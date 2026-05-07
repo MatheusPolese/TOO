@@ -161,6 +161,7 @@ class MissaoColeta(Missao):
         print(f"Recompensa: {self.recompensa} XP")
 
 class MissaoExploracao(Missao):
+    
     def __init__(self, nome, descricao, recompensa, regiao_destino, distancia_em_km):
         super().__init__(nome, descricao, recompensa)
         self.regiao_destino = regiao_destino
@@ -172,7 +173,6 @@ class MissaoExploracao(Missao):
             return True
         self._Missao__status = Status.FRACASSADA
         return False
-
 
     @property
     def regiao_destino(self):
