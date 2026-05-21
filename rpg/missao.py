@@ -1,11 +1,12 @@
-from status import Status
+from abc import ABC, abstractmethod
+from status import EstadoPendente, EstadoAndamento, EstadoConcluida, EstadoFracassada
 
-class Missao:
+class Missao(ABC):
     def __init__(self, nome, descricao, recompensa):
         self.__nome = nome.strip()
         self.__descricao = descricao
         self.__recompensa = recompensa
-        self.__status = Status.PENDENTE
+        self.__status = EstadoPendente(self)
 
     @property
     def nome(self):
@@ -35,21 +36,10 @@ class Missao:
 
     @property
     def status(self):
-        return self.__status.value
-    
-    @status.setter
-    def status(self, novo_status):
-        fluxo = {
-            Status.PENDENTE: Status.EM_ANDAMENTO,
-            Status.EM_ANDAMENTO: Status.CONCLUIDA
-        }
-        if self.__status in fluxo and novo_status == fluxo[self.__status]:
-            self.__status = novo_status
-        elif novo_status == Status.FRACASSADA:
-            self.__status = Status.FRACASSADA
-
+        return self.__status.nome
+   
     def __str__(self):
-        return f"Missão: {self.__nome} | Status: {self.__status.value}"
+        return f"Missão: {self.__nome} | Status: {self.__status.nome}"
 
     def __eq__(self, outro):
         if not isinstance(outro, Missao):
@@ -64,14 +54,10 @@ class Missao:
         print(f"Status: {self.__status.value}")
     
     def iniciar_missao(self):
-        return False
+        return self.__status.iniciar()
     
-    def concluir_missao(self) :
-        if self.__status == Status.EM_ANDAMENTO:
-            self.__status = Status.CONCLUIDA
-            print(f"Missão concluída como sucesso. A contabilidade do prêmio de{ self.__recompensa } XP agora está pronta para retirada financeira.")
-        else:
-            print(f"Erro! missão não pode ser concluida pois está em {self.__status.value}")
+    def concluir_missao(self, valor) :
+        return self.__status.concluir(valor)
     
 class MissaoCombate(Missao):
     def __init__(self, nome, descricao, recompensa, tipo_inimigo, inimigos_a_derrotar):
@@ -79,18 +65,14 @@ class MissaoCombate(Missao):
         self.__tipo_inimigo = tipo_inimigo
         self.__inimigos_a_derrotar = inimigos_a_derrotar
 
-    def concluir_missao(self, valor):
-        if valor >= self._MissaoCombate__inimigos_a_derrotar:
-            self._Missao__status = Status.CONCLUIDA
-            return True
-        self._Missao__status = Status.FRACASSADA
-        return False
+    def verificar_sucesso(self, valor):
+        return valor >= self._MissaoCombate__inimigos_a_derrotar
 
+    
     @property
     def tipo_inimigo(self):
         return self.__tipo_inimigo
     
-
     @property
     def inimigos_a_derrotar(self):
         return self.__inimigos_a_derrotar
@@ -125,12 +107,9 @@ class MissaoColeta(Missao):
         self.item_necessario = item_necessario
         self.quantidade_item = quantidade_item
 
-    def concluir_missao(self, valor):
-        if valor >= self._MissaoColeta__quantidade_item:
-            self._Missao__status = Status.CONCLUIDA
-            return True
-        self._Missao__status = Status.FRACASSADA
-        return False
+    def verificar_sucesso(self, valor):
+        return valor >= self._MissaoColeta__quantidade_item
+    
 
     @property
     def item_necessario(self):
@@ -167,12 +146,9 @@ class MissaoExploracao(Missao):
         self.regiao_destino = regiao_destino
         self.distancia_em_km = distancia_em_km
 
-    def concluir_missao(self, valor):
-        if valor >= self._MissaoExploracao__distancia_em_km:
-            self._Missao__status = Status.CONCLUIDA
-            return True
-        self._Missao__status = Status.FRACASSADA
-        return False
+    def verificar_sucesso(self, valor):
+        return valor >= self._MissaoExploracao__distancia_em_km
+
 
     @property
     def regiao_destino(self):

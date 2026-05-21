@@ -1,5 +1,4 @@
 
-from status import Status
 from missao import Missao
 from missao import MissaoCombate
 from missao import MissaoColeta
